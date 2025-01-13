@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { DateRangePicker } from '@/components/date-range-picker';
 
 interface SchemaField {
   title?: string; // Optional title
@@ -155,7 +156,7 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps> = ({
                   </FormControl>
                 ) : type === "dateRange" ? (
                   <FormControl>
-                    <DatePicker.RangePicker {...field} />
+                    <DateRangePicker {...field} />
                   </FormControl>
                 ) : type === "file" ? (
                   <FormControl>

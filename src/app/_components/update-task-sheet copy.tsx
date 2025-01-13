@@ -2,6 +2,7 @@
 
 import React from 'react';
 import SchemaFormBuilder from './schema-form-builder'; // Import the component
+import { DateRangePicker } from '@/components/date-range-picker';
 
 const MyComponent = () => {
   const mySchema = {
@@ -12,6 +13,14 @@ const MyComponent = () => {
       { name: 'lastName', label: 'Last Name', type: 'text' },
       { name: 'email', label: 'Email', type: 'text' },
       { name: 'age', label: 'Age', type: 'number' },
+      { 
+        title: 'Date Range', 
+        dataIndex: 'dateRange', 
+        name: 'dateRange', 
+        type: 'dateRange', 
+        initialValue: [dayjs().add(-1, 'm'), dayjs()], 
+        renderFormItem: () => <DateRangePicker/> 
+      },
       {
         name: 'gender',
         label: 'Gender',
