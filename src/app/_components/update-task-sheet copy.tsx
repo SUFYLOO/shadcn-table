@@ -49,7 +49,7 @@ import { DateRangePicker } from '@/components/date-range-picker';
     ],
   };
 
-  const handleFormSubmit = (data) => {
+  const handleFormSubmit = (data:any) => {
     console.log('Form submitted:', data);
     // Handle form submission here (e.g., send data to server)
   };

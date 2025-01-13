@@ -1,11 +1,33 @@
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle
+} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DateRangePicker } from '@/components/date-range-picker'; // Assuming this is a custom component
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import { DateRangePicker } from '@/components/date-range-picker';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
 import { NumberInput } from '@/components/ui/number-input';
@@ -14,7 +36,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FileUpload } from '@/components/ui/file-upload';
 import { z } from 'zod';
-
 
 interface SchemaField {
   title?: string;
@@ -36,7 +57,7 @@ interface SchemaField {
   width?: string;
   colProps?: any;
   transform?: (value: any) => any;
-  rules?: any; // Add rules for validation
+  rules?: any;
   [key: string]: any;
 }
 
@@ -46,7 +67,7 @@ interface Schema {
   fields: SchemaField[];
 }
 
-interface SchemaFormBuilderProps<T>   {
+interface SchemaFormBuilderProps<T> {
   schema: Schema;
   client: (data: T) => Promise<any>;
   onSubmit: (data: T) => void;
@@ -54,20 +75,19 @@ interface SchemaFormBuilderProps<T>   {
   props?: React.ComponentPropsWithRef<any>;
 }
 
-const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
+const SchemaFormBuilder = <T,>({
   schema,
   client,
   onSubmit,
   initialValues = {},
   ...props
-}) => {
-  const form /* { control, handleSubmit, formState: { errors },  }  */ = useForm({
-    // Define the type of the form data dynamically based on the schema
+}: SchemaFormBuilderProps<T>) => {
+  const form = useForm<T>({
     resolver: zodResolver(
       z.object(
         schema.fields.reduce((acc, field) => {
           const { name, type, options, rules } = field;
-          let fieldSchema = z.any();
+          let fieldSchema = z.any() ;
 
           switch (type) {
             case 'text':
@@ -87,14 +107,14 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
                 );
                 fieldSchema = z.enum(optionValues);
               } else {
-                fieldSchema = z.string(); // Default to string if options are not defined
+                fieldSchema = z.string();
               }
               break;
             case 'date':
-              fieldSchema = z.string(); // Handle date format as needed
+              fieldSchema = z.string();
               break;
             case 'file':
-              fieldSchema = z.string(); // Handle file upload as needed
+              fieldSchema = z.string();
               break;
             case 'select':
               if (options && Array.isArray(options) && options.length > 0) {
@@ -103,12 +123,11 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
                 );
                 fieldSchema = z.enum(optionValues);
               } else {
-                fieldSchema = z.string(); // Default to string if options are not defined
+                fieldSchema = z.string();
               }
               break;
             case 'dateRange':
-              // Define your date range schema here
-              fieldSchema = z.array(z.string()).length(2); // Example: array of two dates
+              fieldSchema = z.array(z.string()).length(2);
               break;
             default:
               fieldSchema = z.any();
@@ -121,15 +140,15 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
           }
 
           return { ...acc, [name]: fieldSchema };
-        }, {} as any)
+        }, {} as Record<string, any>)
       )
     ),
     defaultValues: initialValues,
   });
 
-  const handleFormSubmit = async (data: any) => {
+  const handleFormSubmit = async (data: T) => {
     try {
-      const processedData = {};
+      const processedData: Record<string, any> = {};
       schema.fields.forEach((field) => {
         if (field.transform) {
           processedData[field.dataIndex || field.name] = field.transform(data[field.name]);
@@ -152,88 +171,64 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
   };
 
   const renderField = (field: SchemaField) => {
-    const { name, label, type, options, initialValue, renderFormItem, ...rest } = field;
+    const { name, title, type, options, renderFormItem, ...rest } = field;
 
     return (
-    //   <Controller
-    //   render={({ field }) => (
-    //     <input
-    //       onChange={(e) => field.onChange(transform.output(e))}
-    //       value={transform.input(field.value)}
-    //     />
-    //   )}
-    // />
       <FormField key={name} control={form.control} name={name} 
          render={({ field }) => (
           <FormItem>
-            <FormLabel>{label}</FormLabel>
+            <FormLabel>{title}</FormLabel>
             {renderFormItem ? (
               renderFormItem()
             ) : (
               <FormControl>
                 {type === "textarea" ? (
-                  <Textarea {...field} placeholder={label} className="resize-none" />
+                  <Textarea {...field} placeholder={title} className="resize-none" />
                 ) : type === "text" ? (
-                  <Input {...field} placeholder={label} />
+                  <Input {...field} placeholder={title} />
                 ) : type === "number" ? (
-                  <NumberInput {...field} placeholder={label} />
+                  <NumberInput {...field} placeholder={title} />
                 ) : type === "checkbox" ? (
-                  <FormControl>
-                    <Checkbox {...field} />
-                  </FormControl>
+                  <Checkbox {...field} />
                 ) : type === "radio" ? (
-                  <FormControl>
-                    <RadioGroup
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      options={options.map((option: any) => ({
-                        value: option.value || option,
-                        label: option.label || option,
-                      }))}
-                    />
-                  </FormControl>
+                  <RadioGroup
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    options={options?.map((option: any) => ({
+                      value: option.value || option,
+                      label: option.label || option,
+                    })) || []}
+                  />
                 ) : type === "date" ? (
-                  <FormControl>
-                    <DatePicker {...field} />
-                  </FormControl>
+                  <DatePicker {...field} />
                 ) : type === "dateRange" ? (
-                  <FormControl>
-                    <DateRangePicker {...field} />
-                  </FormControl>
+                  <DateRangePicker {...field} />
                 ) : type === "file" ? (
-                  <FormControl>
-                    <FileUpload {...field} />
-                  </FormControl>
+                  <FileUpload {...field} />
                 ) : type === "select" ? (
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="capitalize">
-                          <SelectValue placeholder={`Select a ${label}`} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectGroup>
-                          {options.map((option: any) => (
-                            <SelectItem
-                              key={option.value || option}
-                              value={option.value || option}
-                              className="capitalize"
-                            >
-                              {option.label || option}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger className="capitalize">
+                      <SelectValue placeholder={`Select a ${title}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {options?.map((option: any) => (
+                          <SelectItem
+                            key={option.value || option}
+                            value={option.value || option}
+                            className="capitalize"
+                          >
+                            {option.label || option}
+                          </SelectItem>
+                        )) || null}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 ) : (
-                  <FormControl>
-                    <Input {...field} placeholder={label} />
-                  </FormControl>
+                  <Input {...field} placeholder={title} />
                 )}
               </FormControl>
             )}
@@ -251,7 +246,8 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
           <SheetTitle>{schema.title}</SheetTitle>
           <SheetDescription>{schema.description}</SheetDescription>
         </SheetHeader>
-        <Form {...form}> 
+        {/* onSubmit={form.handleSubmit(handleFormSubmit)} */}
+        <Form {...form} >
           <form className="flex flex-col gap-4">
             {schema.fields.map((field) => renderField(field))}
           </form>
