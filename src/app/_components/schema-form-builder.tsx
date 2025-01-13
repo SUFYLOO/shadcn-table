@@ -46,11 +46,12 @@ interface Schema {
   fields: SchemaField[];
 }
 
-interface SchemaFormBuilderProps<T> {
+interface SchemaFormBuilderProps<T>   {
   schema: Schema;
   client: (data: T) => Promise<any>;
   onSubmit: (data: T) => void;
   initialValues?: Record<string, any>;
+  props?: React.ComponentPropsWithRef<any>;
 }
 
 const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
@@ -58,6 +59,7 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
   client,
   onSubmit,
   initialValues = {},
+  ...props
 }) => {
   const form /* { control, handleSubmit, formState: { errors },  }  */ = useForm({
     // Define the type of the form data dynamically based on the schema
@@ -243,7 +245,7 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
   };
 
   return (
-    <Sheet open={true}>
+    <Sheet {...props}>
       <SheetContent className="flex flex-col gap-6 sm:max-w-md">
         <SheetHeader className="text-left">
           <SheetTitle>{schema.title}</SheetTitle>

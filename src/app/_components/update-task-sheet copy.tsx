@@ -3,7 +3,7 @@
 import React from 'react';
 import SchemaFormBuilder from './schema-form-builder'; // Import the component
 import { DateRangePicker } from '@/components/date-range-picker';
-
+ // extends React.ComponentPropsWithRef<typeof Sheet>
  export function MyComponent() {
   
   const mySchema = {
@@ -59,6 +59,7 @@ import { DateRangePicker } from '@/components/date-range-picker';
       <SchemaFormBuilder 
         schema={mySchema} 
         onSubmit={handleFormSubmit} 
+        
       />
     </div>
   );

@@ -193,7 +193,7 @@ export function TasksTable({ promises }: TasksTableProps) {
   
         
       </DataTable>
-      <MyComponent/>
+      <MyComponent open={true}/>
       <UpdateTaskSheet
         open={rowAction?.type === "add"}
         onOpenChange={() => setRowAction(null)}
