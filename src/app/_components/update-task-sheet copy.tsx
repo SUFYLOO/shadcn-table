@@ -4,7 +4,8 @@ import React from 'react';
 import SchemaFormBuilder from './schema-form-builder'; // Import the component
 import { DateRangePicker } from '@/components/date-range-picker';
 
-const MyComponent = () => {
+ export function MyComponent() {
+  
   const mySchema = {
     title: 'My Form',
     description: 'This is a sample form',
@@ -63,4 +64,4 @@ const MyComponent = () => {
   );
 };
 
-export default MyComponent;
+;

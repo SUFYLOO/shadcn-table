@@ -153,8 +153,16 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
     const { name, label, type, options, initialValue, renderFormItem, ...rest } = field;
 
     return (
-      <FormField key={name} control={form.control} name={name}>
-        {({ field }) => (
+    //   <Controller
+    //   render={({ field }) => (
+    //     <input
+    //       onChange={(e) => field.onChange(transform.output(e))}
+    //       value={transform.input(field.value)}
+    //     />
+    //   )}
+    // />
+      <FormField key={name} control={form.control} name={name} 
+         render={({ field }) => (
           <FormItem>
             <FormLabel>{label}</FormLabel>
             {renderFormItem ? (
@@ -229,13 +237,13 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
             )}
             <FormMessage />
           </FormItem>
-        )}
-      </FormField>
+         )}
+         />
     );
   };
 
   return (
-    <Sheet>
+    <Sheet open={true}>
       <SheetContent className="flex flex-col gap-6 sm:max-w-md">
         <SheetHeader className="text-left">
           <SheetTitle>{schema.title}</SheetTitle>
