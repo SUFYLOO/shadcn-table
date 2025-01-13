@@ -18,7 +18,7 @@ const MyComponent = () => {
         dataIndex: 'dateRange', 
         name: 'dateRange', 
         type: 'dateRange', 
-        initialValue: [dayjs().add(-1, 'm'), dayjs()], 
+        // initialValue: [dayjs().add(-1, 'm'), dayjs()], 
         renderFormItem: () => <DateRangePicker/> 
       },
       {

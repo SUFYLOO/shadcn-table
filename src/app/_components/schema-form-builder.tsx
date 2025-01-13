@@ -1,45 +1,23 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, Radio } from '@/components/ui/radio-group';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DateRangePicker } from '@/components/date-range-picker'; // Assuming this is a custom component
+import { RadioGroup } from '@/components/ui/radio-group';
 import { DatePicker } from '@/components/ui/date-picker';
 import { NumberInput } from '@/components/ui/number-input';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { FileUpload } from '@/components/ui/file-upload';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { DateRangePicker } from '@/components/date-range-picker';
+
 
 interface SchemaField {
-  title?: string; // Optional title
-  dataIndex?: string; // Optional data index
+  title?: string;
+  dataIndex?: string;
   name: string;
   type:
     | 'text'
@@ -50,14 +28,15 @@ interface SchemaField {
     | 'date'
     | 'file'
     | 'select'
-    | 'dateRange'; // Added dateRange type
+    | 'dateRange';
   options?: string[] | { value: string | number; label: string }[];
-  initialValue?: any; // Allow for various initial values
-  renderFormItem?: () => React.ReactNode; // Allow custom form item rendering
-  width?: string; // Optional width for layout
-  colProps?: any; // Optional column properties
-  transform?: (value: any) => any; // Optional data transformation function
-  [key: string]: any; // Allow for custom properties
+  initialValue?: any;
+  renderFormItem?: () => React.ReactNode;
+  width?: string;
+  colProps?: any;
+  transform?: (value: any) => any;
+  rules?: any; // Add rules for validation
+  [key: string]: any;
 }
 
 interface Schema {
@@ -66,20 +45,82 @@ interface Schema {
   fields: SchemaField[];
 }
 
-interface SchemaFormBuilderProps {
+interface SchemaFormBuilderProps<T> {
   schema: Schema;
-  client: (data: any) => Promise<any>;
-  onSubmit: (data: any) => void;
+  client: (data: T) => Promise<any>;
+  onSubmit: (data: T) => void;
   initialValues?: Record<string, any>;
 }
 
-const SchemaFormBuilder: React.FC<SchemaFormBuilderProps> = ({
+const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
   schema,
   client,
   onSubmit,
   initialValues = {},
 }) => {
   const { control, handleSubmit, formState: { errors } } = useForm({
+    // Define the type of the form data dynamically based on the schema
+    resolver: zodResolver(
+      z.object(
+        schema.fields.reduce((acc, field) => {
+          const { name, type, options, rules } = field;
+          let fieldSchema = z.any();
+
+          switch (type) {
+            case 'text':
+            case 'textarea':
+              fieldSchema = z.string();
+              break;
+            case 'number':
+              fieldSchema = z.number();
+              break;
+            case 'checkbox':
+              fieldSchema = z.boolean();
+              break;
+            case 'radio':
+              if (options && Array.isArray(options) && options.length > 0) {
+                const optionValues = options.map((option) =>
+                  typeof option === 'object' ? option.value : option
+                );
+                fieldSchema = z.enum(optionValues);
+              } else {
+                fieldSchema = z.string(); // Default to string if options are not defined
+              }
+              break;
+            case 'date':
+              fieldSchema = z.string(); // Handle date format as needed
+              break;
+            case 'file':
+              fieldSchema = z.string(); // Handle file upload as needed
+              break;
+            case 'select':
+              if (options && Array.isArray(options) && options.length > 0) {
+                const optionValues = options.map((option) =>
+                  typeof option === 'object' ? option.value : option
+                );
+                fieldSchema = z.enum(optionValues);
+              } else {
+                fieldSchema = z.string(); // Default to string if options are not defined
+              }
+              break;
+            case 'dateRange':
+              // Define your date range schema here
+              fieldSchema = z.array(z.string()).length(2); // Example: array of two dates
+              break;
+            default:
+              fieldSchema = z.any();
+          }
+
+          if (rules) {
+            fieldSchema = fieldSchema.refine(rules.validate, {
+              message: rules.message,
+            });
+          }
+
+          return { ...acc, [name]: fieldSchema };
+        }, {} as any)
+      )
+    ),
     defaultValues: initialValues,
   });
 
@@ -94,31 +135,21 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps> = ({
         }
       });
 
-      const response = await client(processedData); // Call the provided client function with processed data
+      const response = await client(processedData);
 
       if (response.error) {
-        toast.error(response.error);
+        console.error(response.error);
         return;
       }
 
-      onSubmit(data); // Call the provided onSubmit callback with form data
-      toast.success("Form submitted successfully!");
+      onSubmit(data);
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("An error occurred while submitting the form.");
     }
   };
 
   const renderField = (field: SchemaField) => {
-    const {
-      name,
-      label,
-      type,
-      options,
-      initialValue,
-      renderFormItem,
-      ...rest
-    } = field;
+    const { name, label, type, options, initialValue, renderFormItem, ...rest } = field;
 
     return (
       <FormField key={name} control={control} name={name}>
@@ -209,7 +240,7 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps> = ({
           <SheetTitle>{schema.title}</SheetTitle>
           <SheetDescription>{schema.description}</SheetDescription>
         </SheetHeader>
-        <Form onSubmit={handleSubmit(handleFormSubmit)}>
+        <Form {...form}> 
           <form className="flex flex-col gap-4">
             {schema.fields.map((field) => renderField(field))}
           </form>
