@@ -23,3 +23,26 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = "Input"
 
 export { Input }
+
+
+
+// // DatePicker.tsx
+// import * as React from 'react';
+
+// export const DatePicker: React.FC<React.HTMLAttributes<HTMLInputElement>> = ({ ...props }) => {
+//   return <input type="date" {...props} />;
+// };
+
+// // NumberInput.tsx
+// import * as React from 'react';
+
+// export const NumberInput: React.FC<React.HTMLAttributes<HTMLInputElement>> = ({ ...props }) => {
+//   return <input type="number" {...props} />;
+// };
+
+// // FileUpload.tsx
+// import * as React from 'react';
+
+// export const FileUpload: React.FC<React.HTMLAttributes<HTMLInputElement>> = ({ ...props }) => {
+//   return <input type="file" {...props} />;
+// };
