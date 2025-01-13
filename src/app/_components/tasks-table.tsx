@@ -26,6 +26,7 @@ import { getColumns } from "./tasks-table-columns"
 import { TasksTableFloatingBar } from "./tasks-table-floating-bar"
 import { TasksTableToolbarActions } from "./tasks-table-toolbar-actions"
 import { UpdateTaskSheet } from "./update-task-sheet"
+import { Button } from "@/components/ui/button"
 
 interface TasksTableProps {
   promises: Promise<
@@ -135,7 +136,8 @@ export function TasksTable({ promises }: TasksTableProps) {
     },
   ]
 
-  const enableAdvancedTable = featureFlags.includes("advancedTable")
+  // const enableAdvancedTable = featureFlags.includes("advancedTable")
+  const enableAdvancedTable = true
   const enableFloatingBar = featureFlags.includes("floatingBar")
 
   const { table } = useDataTable({
@@ -143,7 +145,7 @@ export function TasksTable({ promises }: TasksTableProps) {
     columns,
     pageCount,
     filterFields,
-    enableAdvancedFilter: enableAdvancedTable,
+    enableAdvancedFilter: true/* enableAdvancedTable */,
     initialState: {
       sorting: [{ id: "createdAt", desc: true }],
       columnPinning: { right: ["actions"] },
@@ -168,6 +170,17 @@ export function TasksTable({ promises }: TasksTableProps) {
             shallow={false}
           >
             <TasksTableToolbarActions table={table} />
+            <Button
+        variant="outline"
+        size="sm"
+        onClick={() =>
+          setRowAction({  type: "add" })
+        }
+        className="gap-2"
+      >
+        {/* <Download className="size-4" aria-hidden="true" /> */}
+        Add
+      </Button>
           </DataTableAdvancedToolbar>
         ) : (
           <DataTableToolbar table={table} filterFields={filterFields}>
@@ -176,14 +189,19 @@ export function TasksTable({ promises }: TasksTableProps) {
         )}
       </DataTable>
       <UpdateTaskSheet
+        open={rowAction?.type === "add"}
+        onOpenChange={() => setRowAction(null)}
+        task={rowAction?.row?.original ?? null}
+      />
+      <UpdateTaskSheet
         open={rowAction?.type === "update"}
         onOpenChange={() => setRowAction(null)}
-        task={rowAction?.row.original ?? null}
+        task={rowAction?.row?.original ?? null}
       />
       <DeleteTasksDialog
         open={rowAction?.type === "delete"}
         onOpenChange={() => setRowAction(null)}
-        tasks={rowAction?.row.original ? [rowAction?.row.original] : []}
+        tasks={rowAction?.row?.original ? [rowAction?.row.original] : []}
         showTrigger={false}
         onSuccess={() => rowAction?.row.toggleSelected(false)}
       />
