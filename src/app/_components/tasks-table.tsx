@@ -137,8 +137,9 @@ export function TasksTable({ promises }: TasksTableProps) {
   ]
 
   // const enableAdvancedTable = featureFlags.includes("advancedTable")
+  // const enableFloatingBar = featureFlags.includes("floatingBar")
   const enableAdvancedTable = true
-  const enableFloatingBar = featureFlags.includes("floatingBar")
+  const enableFloatingBar = true
 
   const { table } = useDataTable({
     data,
@@ -187,6 +188,9 @@ export function TasksTable({ promises }: TasksTableProps) {
             <TasksTableToolbarActions table={table} />
           </DataTableToolbar>
         )}
+        
+  
+        
       </DataTable>
       <UpdateTaskSheet
         open={rowAction?.type === "add"}
