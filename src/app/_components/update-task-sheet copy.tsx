@@ -9,7 +9,13 @@ const MyComponent = () => {
     title: 'My Form',
     description: 'This is a sample form',
     fields: [
-      { name: 'firstName', label: 'First Name', type: 'text' },
+      { name: 'firstName', label: 'First Name', type: 'text' , rules: {
+        required: 'First Name is required', 
+        minLength: { 
+          value: 2, 
+          message: 'First Name must be at least 2 characters' 
+        }
+      } ,},
       { name: 'lastName', label: 'Last Name', type: 'text' },
       { name: 'email', label: 'Email', type: 'text' },
       { name: 'age', label: 'Age', type: 'number' },
@@ -25,6 +31,7 @@ const MyComponent = () => {
         name: 'gender',
         label: 'Gender',
         type: 'radio',
+       
         options: [
           { value: 'male', label: 'Male' },
           { value: 'female', label: 'Female' },

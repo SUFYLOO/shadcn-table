@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DateRangePicker } from '@/components/date-range-picker'; // Assuming this is a custom component
 import { RadioGroup } from '@/components/ui/radio-group';
@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FileUpload } from '@/components/ui/file-upload';
+import { z } from 'zod';
 
 
 interface SchemaField {
@@ -58,7 +59,7 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
   onSubmit,
   initialValues = {},
 }) => {
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const form /* { control, handleSubmit, formState: { errors },  }  */ = useForm({
     // Define the type of the form data dynamically based on the schema
     resolver: zodResolver(
       z.object(
@@ -152,7 +153,7 @@ const SchemaFormBuilder: React.FC<SchemaFormBuilderProps<any>> = ({
     const { name, label, type, options, initialValue, renderFormItem, ...rest } = field;
 
     return (
-      <FormField key={name} control={control} name={name}>
+      <FormField key={name} control={form.control} name={name}>
         {({ field }) => (
           <FormItem>
             <FormLabel>{label}</FormLabel>
