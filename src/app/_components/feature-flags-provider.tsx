@@ -59,7 +59,7 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
         setFeatureFlags: (value) => void setFeatureFlags(value),
       }}
     >
-      <div className="w-full overflow-x-auto">
+      {/* <div className="w-full overflow-x-auto">
         <ToggleGroup
           type="multiple"
           variant="outline"
@@ -101,7 +101,7 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
             </Tooltip>
           ))}
         </ToggleGroup>
-      </div>
+      </div> */}
       {children}
     </FeatureFlagsContext.Provider>
   )
