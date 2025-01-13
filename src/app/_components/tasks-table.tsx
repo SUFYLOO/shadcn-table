@@ -27,6 +27,7 @@ import { TasksTableFloatingBar } from "./tasks-table-floating-bar"
 import { TasksTableToolbarActions } from "./tasks-table-toolbar-actions"
 import { UpdateTaskSheet } from "./update-task-sheet"
 import { Button } from "@/components/ui/button"
+import MyComponent from "./update-task-sheet copy"
 
 interface TasksTableProps {
   promises: Promise<
@@ -192,6 +193,7 @@ export function TasksTable({ promises }: TasksTableProps) {
   
         
       </DataTable>
+      <MyComponent></MyComponent>
       <UpdateTaskSheet
         open={rowAction?.type === "add"}
         onOpenChange={() => setRowAction(null)}

@@ -37,7 +37,6 @@ import { Textarea } from "@/components/ui/textarea"
 
 import { updateTask } from "../_lib/actions"
 import { updateTaskSchema, type UpdateTaskSchema } from "../_lib/validations"
-import MyComponent from "./update-task-sheet copy"
 
 interface UpdateTaskSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
@@ -86,7 +85,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
             Update the task details and save the changes   
           </SheetDescription>
         </SheetHeader>
-        <MyComponent></MyComponent>
+        
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
